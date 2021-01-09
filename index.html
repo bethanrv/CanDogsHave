@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Can Dogs Have... </title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://fonts.googleapis.com/css2?family=Xanh+Mono&display=swap" rel="stylesheet">
+ 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body onload="getFoods();">
+
+	<h1> Can Dogs Have... </h1>
+
+	<centerInputContainer>
+		<input id="userInput" type="text" name="foodInput" oninput="filterFoods();" />
+	</centerInputContainer>
+
+	<div id="food-list">
+	</div>
+
+	<foodDescContainer id="food-desc"> 
+	</foodDescContainer>
+
+	<button id="addItemBtn" style="display: none;" onclick="promptAddItem()"> Add Item? </button>
+
+	<img class="bg-img" src="https://iili.io/KLqnLJ.png" alt="bg-img"/>
+
+	<h2 style="padding: 2vh; width: 100%; display: flex; justify-content: center;" class="linkTxt" onclick="window.open('www.akc.org')"> Sourced From: www.akc.org </h2>
+
+
+</body>
+</html>
+
+<style type="text/css">
+	
+	*{
+		padding: 0;
+		margin: 0;
+		box-sizing: 0;
+	}
+
+	p{
+		font-family: 'Xanh Mono', monospace;
+		font-size: 1.5em;
+		padding: 1vh;
+	}
+
+	h1{
+		font-family: 'Xanh Mono', monospace;
+		font-size: 3em;
+		font-weight: bolder;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding-top: 4vh;
+		padding-bottom: 4vh;
+	}
+
+	h2{
+		font-family: 'Xanh Mono', monospace;
+		font-size: 2em;
+		font-weight: bold;
+	}
+
+	input{
+		font-size: 1.5em;
+		font-family: 'Xanh Mono', monospace;
+		padding: 1vh;
+	}
+
+	.bg-img{
+		position: fixed;
+		top:66%;
+		height: 30%;
+		left: 0;
+		width: 30%;
+	}
+
+	.linkTxt{
+		cursor: pointer;
+	}
+
+	.linkTxt:hover{
+		color:dodgerblue;
+		text-decoration: underline;
+	}
+
+
+	foodContainer{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	foodContainer i{
+		margin-left: 2vh;
+	}
+
+	foodContainer p{
+		cursor: pointer;
+	}
+
+	centerInputContainer{
+		width: 100%;
+		padding-top: 4vh;
+		padding-bottom: 4vh;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	foodDescContainer{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+	}
+	foodDescContainer p{
+		width: 66%;
+	}
+
+</style>
+<script src="food-script.js"></script>
+<script type="text/javascript">
+
+	//properties
+	var foods = {};
+	var check_icon = "<i class='material-icons' style='color:green;'> check_circle </i>";
+	var block_icon = "<i class='material-icons' style='color:red;'> block </i>";
+
+	//functions
+	const logFoods = () => {
+		for(var food in foods){
+			console.log(foods[food]);
+		}
+	};
+
+	const addFood = (name, status, desc) => { 
+		var food = new Food(name, status, desc);
+		foods[name] = food;
+	}
+
+	const drawAllFoods = () => {
+
+		var list = document.getElementById('food-list');
+
+		for(var food in foods){
+			var icon = foods[food].icon;
+			var nameHtml = "<p>"+foods[food].name+"</p>";
+
+			if(foods[food].name=='A Little Bit of Salami') return;
+
+			var search_func = "setSearch('"+foods[food].name+"')";
+
+			var foodListHtml = "<foodContainer onclick="+search_func+">" + nameHtml + icon + "</foodContainer>";
+
+			list.innerHTML += foodListHtml;
+		}
+	}
+
+	const setSearch = (name) => {
+		document.getElementById('userInput').value = name;
+		filterFoods();
+	}
+
+	const filterFoods = () => {
+		var input = document.getElementById('userInput').value;
+		var foods_in_search = {};
+		var search_len = input.length;
+
+		for(var food in foods){
+			if(foods[food].name.substring(0,search_len).toLowerCase() == input.toLowerCase()){
+				foods_in_search[food] = foods[food];
+			}
+		}
+
+		drawFilteredFoods(foods_in_search);
+	}
+
+	const drawFilteredFoods = (foods_in_search) => {
+
+		var list = document.getElementById('food-list');
+		list.innerHTML = "";
+
+		for(var food in foods_in_search){
+			var icon = foods[food].icon;
+			var nameHtml = "<p>"+foods[food].name+"</p>"
+			var search_func = "setSearch('"+foods[food].name+"')";
+
+			var foodListHtml = "<foodContainer onclick="+search_func+">" + nameHtml + icon + "</foodContainer>";
+
+			list.innerHTML += foodListHtml;
+		}
+
+
+		var food_desc = document.getElementById('food-desc');
+		if(Object.keys(foods_in_search).length == 1){
+			var food_desc_html = "<p>" + foods[food].desc + "</p>";
+			food_desc.innerHTML = food_desc_html;
+			food_desc.style.display = 'flex';
+		}
+		else if(Object.keys(foods_in_search).length == 0){
+			// document.getElementById('addItemBtn').style.display = 'block';
+			food_desc.style.display = 'none';
+		}
+		else{
+			food_desc.style.display = 'none';
+		}
+	}
+
+	const getIconTxt = (status) => {
+		if(status == 'no') return "block";
+		else return "check_circle";
+	}
+
+	const getIconCol = (status) => {
+		if(status == 'no') return 'red';
+		else return "green";
+	}
+
+	//classes
+	class Food{
+		constructor(name, status, desc){
+			this.name = name;
+			this.status = status;
+			this.desc = desc;
+			if(this.status == 'no'){
+				this.iconCol == 'red';
+				this.iconTxt = 'block';
+				this.icon = block_icon;
+			}
+			else{
+				this.iconCol == 'green';
+				this.iconTxt = 'check_circle';
+				this.icon = check_icon;
+			}
+
+		}
+	}
+
+	//autogen util - get foods...
+	function getFoods(){
+		addFood("Almonds","no","No, dogs shouldn't eat almonds. Almonds may not necessarily be toxic to dogs like macadamia nuts are, but they can block the esophagus or even tear the windpipe if not chewed completely. Salted almonds are especially dangerous because they can increase water retention, which is potentially fatal to dogs prone to heart disease.");
+		addFood("Bread","yes","Yes, dogs can eat bread. Small amounts of plain bread (no spices and definitely no raisins) won't hurt your dog, but it also won't provide any health benefits either. It has no nutritional value and can really pack on the carbohydrates and calories, just like in people. Homemade breads are a better option than store-bought, as bread from the grocery store typically contains unnecessary preservatives, but it's best to avoid it altogether.");
+		addFood("Cashews","yes","Yes, dogs can eat cashews. Cashews are OK for dogs, but only a few at a time. They've got calcium, magnesium, antioxidants, and proteins, but while these nuts contain less fat than others, too many can lead to weight gain and other fat-related conditions. A few cashews make a nice treat, but only if they're unsalted.");
+		addFood("Cheese","yes","Yes, dogs can eat cheese in small to moderate quantities. As long as your dog isn't lactose intolerant, which is rare, but still possible in canines, cheese can be a great treat. Many kinds of cheese can be high in fat, so go for lower-fat varieties like cottage cheese or mozzarella. Many dogs enjoy their very own dog-specific Himalayan dog chew made of dried cheese (but we don't recommend sharing it).");
+		addFood("Chocolate","no","No, dogs should never eat chocolate. This isn't just an urban legend. Chocolate contains toxic substances called methylxanthines, which are stimulants that stop a dog's metabolic process. Even just a little bit of chocolate, especially dark chocolate, can cause diarrhea and vomiting. A large amount can cause seizures, irregular heart function, and even death. Do not have chocolate in an accessible location for your dog. If your dog does ingest chocolate, contact a veterinarian or Pet Poison Helpline as soon as possible.");
+		addFood("Cinnamon","no","No, dogs shouldn't eat cinnamon. While cinnamon is not actually toxic to dogs, it's probably best to avoid it. Cinnamon and its oils can irritate the inside of dogs' mouths, making them uncomfortable and sick. It can lower a dog's blood sugar too much and can lead to diarrhea, vomiting, increased, or decreased heart rate, and even liver disease. If they inhale it in powder form, cinnamon can cause difficulty breathing, coughing, and choking.");
+		addFood("Coconut","yes","Yes, coconut is OK for dogs. This funky fruit contains lauric acid, which can help combat bacteria and viruses. It can also help with bad breath and clearing up skin conditions like hot spots, flea allergies, and itchy skin. Coconut milk and coconut oil are safe for dogs too. Just be sure your dog doesn't get its paws on the furry outside of the shell, which can get lodged in the throat.");
+		addFood("Corn","yes","Yes, dogs can eat corn. Corn is one of the most common ingredients in most dog foods. However, the cob can be hard for a dog to digest and may cause an intestinal blockage, so if you're sharing some corn, make sure it is off the cob. (Or just opt for a squeaky corn toy instead.)");
+		addFood("Eggs","yes","Yes, dogs can eat eggs. Eggs are safe for dogs as long as they are fully cooked. Cooked eggs are a wonderful source of protein and can help an upset stomach. However, eating raw egg whites can contribute to biotin deficiency, so be sure to cook the eggs all the way through before giving them to your pet.");
+		addFood("Fish","yes","Yes, dogs can eat fish. Fish contains good fats and amino acids, giving your dog a nice health boost. Salmon and sardines are especially beneficial — salmon because it's loaded with vitamins and protein, and sardines because they have soft, digestible bones for extra calcium. With the exception of sardines, be sure to pick out all the tiny bones, which can be tedious but is definitely necessary. Never feed your dog uncooked or undercooked fish, only fully cooked and cooled, and limit your dog's fish intake to no more than twice a week.");
+		addFood("Garlic","no","No, dogs shouldn't eat garlic. Like onions, leeks, and chives, garlic is part of the Allium family, and it is five times more toxic to dogs than the rest of the Allium plants. Garlic can create anemia in dogs, causing side effects such as pale gums, elevated heart rate, weakness, and collapse. Poisoning from garlic and onions may have delayed symptoms, so if you think your dog may have eaten some, monitor him or her for a few days, not just right after consumption.");
+		addFood("Ham","yes","Yes, dogs can eat ham. Ham is OK for dogs to eat, but certainly isn't the healthiest for them. Ham is high in sodium and fat, so while sharing a small piece is all right, it shouldn't be a continuous habit.");
+		addFood("Honey","yes","Yes, dogs can eat honey. Honey is packed with countless nutrients such as vitamins A, B, C, D, E, and K, potassium, calcium, magnesium, copper, and antioxidants. Feeding dogs small amounts of honey can help with allergies because it introduces small amounts of pollen to their systems, building up immunity to allergens in your area. In addition to consuming honey, the sticky spread can also be used as a topical treatment for burns and superficial cuts.");
+		addFood("Ice cream","no","No, dogs shouldn't eat ice cream. As refreshing of a treat as ice cream is, it contains lots of sugar so it is best not to share with your dog. Also, some dogs have an intolerance to lactose. To avoid the milk altogether, freeze chunks of strawberries, raspberries, apples, and pineapples to give to your dog as a sweet, icy treat.");
+		addFood("Macadamia nuts","no","No, dogs should never eat macadamia nuts. These are some of the most poisonous foods for dogs. Macadamia nuts, part of the Protaceae family, can cause vomiting, increased body temperature, inability to walk, and lethargy. Even worse, they can affect the nervous system. Never feed your dog macadamia nuts.");
+		addFood("Milk","yes","Yes, dogs can have milk. But be cautious. Some dogs are lactose-intolerant and don't digest milk well. While it is OK for dogs to have a little milk, owners should be cognizant of the symptoms of lactose-intolerance and might want to stick to giving their dogs water.");
+		addFood("Peanut butter","yes","Yes, peanut butter is OK for dogs. Peanut butter can be an excellent source of protein for dogs. It contains heart-healthy fats, vitamins B and E and niacin. Raw, unsalted peanut butter is the healthiest option. Read the label carefully to be sure the peanut butter does not contain xylitol, a sugar substitute that can be toxic to dogs.");
+		addFood("Peanuts","yes","Yes, dogs can eat peanuts. Unlike almonds, peanuts are safe for dogs to eat. They're packed with good fats and proteins that can benefit your dog. Just be sure to give peanuts in moderation, as you don't want your dog taking in too much fat, which can lead to pancreas issues. Also, avoid salted peanuts. Too much salt is hard for dogs to process.");
+		addFood("Popcorn","yes","Yes, dogs can eat popcorn. Unsalted, unbuttered, air-popped popcorn is OK for your dog in moderation. It contains riboflavin and thiamine, both of which promote eye health and digestion, as well as small amounts of iron and protein. Be sure to pop the kernels all the way before giving them to your dog, as unpopped kernels could become a choking hazard.");
+		addFood("Pork","yes","Yes, dogs can eat pork. Pork is a highly digestible protein, packed with amino acids, and it contains more calories per pound than other meats. Pork also may be less likely to cause an allergic reaction in some pets compared to other proteins.");
+		addFood("Quinoa","yes","Yes, quinoa is OK for dogs. You can now find quinoa in some high-quality dry dog foods. The strong nutritional profile of quinoa makes it a healthy alternative to corn, wheat, and soy — starches that are often used to make kibble.");
+		addFood("Salmon","yes","Yes, dogs can eat salmon. As mentioned above, fully cooked salmon is an excellent source of protein, good fats, and amino acids. It promotes joint and brain health and gives dog-immune systems a nice boost. However, raw or undercooked salmon contains parasites that can make dogs very sick, causing vomiting, diarrhea, dehydration, and, in extreme cases, even death. Be sure to cook salmon all the way through (the FDA recommends at least 145 degrees Fahrenheit) and the parasites should cook out.");
+		addFood("Shrimp","yes","Yes, shrimp is OK for dogs. A few shrimp every now and then is fine for your dog, but only if they are fully cooked and the shell (including the tail, head, and legs) is removed completely. Shrimp are high in antioxidants, vitamin B-12, and phosphorus, but also low in fat, calories, and carbohydrates.");
+		addFood("Tuna","yes","Yes, dogs can eat tuna, but only in small amounts. In moderation, cooked, fresh tuna is an excellent source of omega-3 fatty acids, which promotes heart and eye health. As for canned tuna, it contains small amounts of mercury and sodium, which should be avoided in excess. A little bit of canned tuna and tuna juice here and there is fine — prepared only in water, not oil — as long as it doesn't contain any spices.");
+		addFood("Turkey","yes","Yes, dogs can eat turkey. Turkey is fine for dogs, but be sure to remove excess fat and skin from the meat. Don't forget to check for bones; poultry bones can splinter during digestion, causing blockage or even tears in the intestines. Any meat with excessive salt, seasonings, onions or garlic should not be fed.");
+		addFood("Wheat/grains","yes","Yes, dogs can eat wheat and other grains. Dogs do not have to be grain-free; it is perfectly OK for them to have grains. In fact, grains like wheat and corn are great sources of protein, essential fatty acids, and fiber. If your dog has certain allergies, however, it might be best to avoid grains, but it truly depends on your dog. Ask your veterinarian for recommendations.");
+		addFood("Yogurt","yes","Yes, yogurt is OK for dogs. Plain yogurt is a perfectly acceptable snack for dogs. However, some dogs may have trouble digesting dairy products. If your dog can digest it, the active bacteria in yogurt can help strengthen the digestive system with probiotics. Plain yogurt is the best choice. Avoid any yogurts with added sugar, and skip all yogurt with artificial sweeteners.");
+		addFood("Apples","yes","Yes, dogs can eat apples. Apples are an excellent source of vitamins A and C, as well as fiber for your dog. They are low in protein and fat, making them the perfect snack for senior dogs. Just be sure to remove the seeds and core first. Try them frozen for an icy warm weather snack.");
+		addFood("Avocado ","no","No, dogs should not eat avocado. While avocado may be a healthy snack for dog owners, it should not be given to dogs at all. The pit, skin, and leaves of avocados contain persin, a toxin that often causes vomiting and diarrhea in dogs. The fleshy inside of the fruit doesn't have as much persin as the rest of the plant, but it is still too much for dogs to handle.");
+		addFood("Bananas","yes","Yes, dogs can eat bananas. In moderation, bananas are a great low-calorie treat for dogs. They're high in potassium, vitamins, biotin, fiber, and copper. They are low in cholesterol and sodium, but because of their high sugar content, bananas should be given as a treat, not part of your dog's main diet.");
+		addFood("Blueberries","yes","Yes, dogs can eat blueberries. Blueberries are a superfood rich in antioxidants, which prevent cell damage in humans and canines alike. They're packed with fiber and phytochemicals as well. Teaching your dog to catch treats in the air? Try blueberries as an alternative to store-bought treats.");
+		addFood("Cantaloupe","yes","Yes, cantaloupe is safe for dogs. Cantaloupe is packed with nutrients, low in calories, and a great source of water and fiber. It is, however, high in sugar, so should be shared in moderation, especially for dogs who are overweight or have diabetes.");
+		addFood("Cherries","no","No, dogs should not eat cherries. With the exception of the fleshy part around the seed, cherry plants contain cyanide and are toxic to dogs. Cyanide disrupts cellular oxygen transport, which means that your dog's blood cells can't get enough oxygen. If your dog eats cherries, be on the lookout for dilated pupils, difficulty breathing, and red gums, as these may be signs of cyanide poisoning.");
+		addFood("Cranberries","yes","Yes, cranberries are safe for dogs to eat. Both cranberries and dried cranberries are safe to feed to dogs in small quantities. Whether your dog will like this tart treat is another question. Either way, moderation is important when feeding cranberries to dogs, as with any treat, as too many cranberries can lead to an upset stomach.");
+		addFood("Cucumbers","yes","Yes, dogs can eat cucumbers. Cucumbers are especially good for overweight dogs, as they hold little to no carbohydrates, fats, or oils and they can even boost energy levels. They're loaded with vitamins K, C, and B1, as well as potassium, copper, magnesium, and biotin.");
+		addFood("Grapes","no","No, dogs should never eat grapes. Grapes and raisins (dried grapes) have proved to be very toxic for dogs no matter the dog's breed, sex, or age. In fact, grapes are so toxic that they can lead to acute sudden kidney failure. Always be mindful of this dangerous fruit for dogs.");
+		addFood("Mango","yes","Yes, dogs can eat mangoes. This sweet summer treat is packed with four different vitamins");
+		addFood("Mango","yes","A, B6, C, and E. They also have potassium and both beta-carotene and alpha-carotene. Just remember, as with most fruits, remove the hard pit first, as it contains small amounts of cyanide and can become a choking hazard. Mango is high in sugar, so use it as an occasional treat.");
+		addFood("Oranges","yes","Yes, dogs can eat oranges. Oranges are fine for dogs to eat, according to veterinarians, but they may not be fans of any strong-smelling citrus. Oranges are an excellent source of vitamin C, potassium, and fiber, and in small quantities, the juicy flesh of an orange can be a tasty treat for your dog. Vets do recommend tossing the peel and only offering your dog the flesh of the orange, minus any seeds. Orange peel is rough on their digestive systems, and the oils may make your dog literally turn up their sensitive nose.");
+		addFood("Peaches","yes","Yes, peaches are safe for dogs to eat. Small amounts of cut-up fresh or frozen peaches are a great source of fiber and vitamin A, and can even help fight infections, but just like cherries, the pit contains cyanide. As long as you completely cut around the pit first, fresh peaches can be a great summer treat. Skip canned peaches, as they usually contain high amounts of sugary syrups.");
+		addFood("Pears","yes","Yes, dogs can eat pears. Pears are a great snack because they're high in copper, vitamins C and K, and fiber. It's been suggested that eating the fruit can reduce the risk of having a stroke by 50 percent. Just be sure to cut pears into bite-size chunks and remove the pit and seeds first, as the seeds contain traces of cyanide. Skip canned pears with sugary syrups.");
+		addFood("Pineapple","yes","Yes, pineapple is safe for dogs to eat. A few chunks of pineapple is a great sweet treat for dogs, as long as the prickly outside peel and crown are removed first. The tropical fruit is full of vitamins, minerals, and fiber. It also contains bromelain, an enzyme that makes it easier for dogs to absorb proteins.");
+		addFood("Raspberries","yes","Yes, dogs can eat raspberries. Raspberries are fine in moderation. They contain antioxidants that are great for dogs. They're low in sugar and calories, but high in fiber, manganese, and vitamin C. Raspberries are especially good for senior dogs because they have anti-inflammatory properties, which can help aging joints. However, they do contain small amounts of xylitol, so limit your dog to less than a cup of raspberries at a time.");
+		addFood("Strawberries","yes","Yes, dogs can eat strawberries. Strawberries are full of fiber and vitamin C. Along with that, they also contain an enzyme that can help whiten your dog's teeth as he or she eats them. They contain sugar, so be sure to give them in moderation.");
+		addFood("Tomatoes","no","No, dogs should avoid tomatoes. While the ripened fruit of the tomato plant is generally considered safe for dogs, the green parts of the plant contain a toxic substance called solanine. While a dog would need to eat a large amount of the tomato plant to make him or her sick, it's better to skip tomatoes all together just to be safe.");
+		addFood("Watermelon","yes","Yes, dogs can eat watermelon. It's important to remove the rind and seeds first, as they can cause intestinal blockage, but watermelon flesh is otherwise safe for dogs. It's full of vitamin A, B-6, and C, as well as potassium. Watermelon is 92 percent water, so it's a great way to help keep your dog hydrated on hot summer days.");
+		addFood("Asparagus","no","No, dogs should not eat asparagus. While asparagus isn't necessarily unsafe for dogs, there's really no point in giving it to them. It's too tough to be eaten raw, and by the time you cook it down so it's soft enough for dogs to eat, asparagus loses the nutrients it contains. If you really want to share a veggie, something more beneficial is probably best.");
+		addFood("Broccoli","yes","Yes, broccoli is safe for dogs to eat in very small quantities and is best served as an occasional treat. It is high in fiber and vitamin C and low in fat. However, Broccoli florets contain isothiocyanates, which can cause mild-to-potentially-severe gastric irritation in some dogs. Furthermore, broccoli stalks have been known to cause obstruction in the esophagus.");
+		addFood("Brussels Sprouts","yes","Yes, dogs can eat Brussels sprouts. Brussels sprouts are loaded with nutrients and antioxidants that are great for humans and dogs, alike. Don't overfeed them to your dog, however, because they can cause lots of gas. Cabbage is also safe for dogs, but comes with the same gassy warning!");
+		addFood("Carrots","yes","Yes, dogs can eat carrots. Carrots are an excellent low-calorie snack that is high in fiber and beta-carotene, which produces vitamin A. Plus, crunching on this orange veggie is great for your dog's teeth (and fun).");
+		addFood("Celery","yes","Yes, celery is safe for dogs to eat. In addition to vitamins A, B, and C, this crunchy green snack contains the nutrients needed to promote a healthy heart and even fight cancer. As if that wasn't enough, celery is also known to freshen doggy breath.");
+		addFood("Green beans","yes","Yes, dogs can eat green beans. Chopped, steamed, raw, or canned – all types of green beans are safe for dogs to eat, as long as they are plain. Green beans are full of important vitamins and minerals and they're also full of fiber and low in calories. Opt for low-salt or no-salt products if you're feeding canned green beans to your dog.");
+		addFood("Mushrooms","no","No, dogs should avoid mushrooms. Wild mushrooms can be toxic for dogs. While only 50-100 of the 50,000 mushroom species worldwide are known to be toxic, the ones that are poisonous can really hurt your dog or even lead to death. Washed white mushrooms from the supermarket could be OK, but it's better to be safe than sorry; skip the fungi for Fido all together.");
+		addFood("Onions","no","No, dogs should never eat onions. Onions, leeks, and chives are part of a family of plants called Allium that is poisonous to most pets, especially cats. Eating onions can cause your dog's red blood cells to rupture, and can also cause vomiting, diarrhea, stomach pain, and nausea. Poisoning from onions is more serious in Japanese breeds of dogs like Akitas and Shiba Inus, but all dogs are very susceptible to it.");
+		addFood("Peas","yes","Yes, dogs can eat peas. Green peas, snow peas, sugar snap peas, and garden or English peas are all OK for dogs to find in their bowl on occasion. Peas have several vitamins, minerals, and are rich in protein and high in fiber. You can feed your dog fresh or frozen peas, but avoid canned peas with added sodium.");
+		addFood("Spinach","yes","Yes, dogs can eat spinach, but it's not one of the top vegetables you'll want to be sharing with you pup. Spinach is high in oxalic acid, which blocks the body's ability to absorb calcium and can lead to kidney damage. While your dog would probably have to eat a very large amount of spinach to have this problem, it might be best to go with another vegetable.");
+		addFood("A Little Bit of Salami","yes","Cats can have a little salami");
+
+		// logFoods();
+		drawAllFoods();
+	}
+	
+</script>
